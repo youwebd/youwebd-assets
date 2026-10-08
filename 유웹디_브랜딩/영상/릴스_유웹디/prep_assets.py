@@ -15,12 +15,16 @@ def blur_box(im, box, radius=10, tint=None):
     im.paste(reg, box[:2])
 
 # 1) 사례 kit: 같은 목업 틀이므로 동일 크롭 → Lanczos 업스케일
-CROP = (170, 90, 840, 530)               # 670x440
+CROP = (170, 90, 840, 508)               # 670x418 (받침대 조각 제외)
 for slug, ext in [("theic","jpg"),("uberhouse","jpg"),("seokyung","jpg"),("aline","jpg"),("luxenova","jpg")]:
     im = Image.open(R/f"kit/{slug}.{ext}").convert("RGB").crop(CROP)
-    if slug == "theic":                  # 초록 플로팅 위젯(고객사 대표번호) 블러
-        blur_box(im, (548, 262, 622, 396), radius=12, tint=(58, 74, 80, 0.20))
-    im.resize((894, 587), Image.LANCZOS).save(A/f"case_{slug}.jpg", quality=92)
+    if slug == "theic":                  # 초록 플로팅 위젯(고객사 대표번호): 블러 + 어두운 틴트 + 페더
+        box = (540, 254, 630, 404)
+        reg = im.crop(box).filter(ImageFilter.GaussianBlur(14))
+        reg = Image.blend(reg, Image.new("RGB", reg.size, (14, 38, 46)), 0.62)
+        m = Image.new("L", reg.size, 0); ImageDraw.Draw(m).rounded_rectangle((8, 8, reg.size[0]-9, reg.size[1]-9), 14, fill=255)
+        im.paste(reg, box[:2], m.filter(ImageFilter.GaussianBlur(5)))
+    im.resize((906, 565), Image.LANCZOS).save(A/f"case_{slug}.jpg", quality=92)
 
 # 2) 고재가구소아 반응형 정지 화면 (hero png)
 Image.open(R/"hero/gojegagusoa.png").convert("RGB").resize((902, 643), Image.LANCZOS).save(A/"what_gojegagusoa.jpg", quality=92)
@@ -42,4 +46,14 @@ with tempfile.TemporaryDirectory() as td:
         for y in range(24): dr.line([(0,y),(200,y)], fill=int(255*y/23))
         im.paste(Image.new("RGB",(200,24),(255,255,255)), (760, 330), g)
         im.save(od/f"f{n:03d}.jpg", quality=92)
+    # 깜빡임 보정: 둘째 줄·블러 패치·버튼 영역(0,184,330,354)을 안정된 프레임에서 복사
+    REG = (0, 184, 330, 354)
+    for tgt, src in [(18,21),(19,21),(20,21),(30,21),(31,21),(53,54)]:
+        t = Image.open(od/f"f{tgt:03d}.jpg"); s_ = Image.open(od/f"f{src:03d}.jpg")
+        t.paste(s_.crop(REG), REG[:2]); t.save(od/f"f{tgt:03d}.jpg", quality=92)
+    # 렌즈용 썸네일: 바뀌기 전/후 사이트 히어로 (사이트 영역 0~755)
+    for name, n in [("old", 168), ("new", 248)]:
+        th = Image.open(f"{td}/f{n:03d}.png").convert("RGB").crop((0, 74, 755, 428))
+        blur_box(th, (0, 242, 224, 290), radius=8, tint=(255, 255, 255, 0.15))
+        th.resize((336, 158), Image.LANCZOS).save(A/f"lens_{name}.jpg", quality=92)
 print("ok", len(USE), "frames")
