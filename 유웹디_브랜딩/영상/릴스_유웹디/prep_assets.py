@@ -38,21 +38,27 @@ def pink_to_blue(im, box=(0, 296, 150, 346), blue=(81, 98, 169)):
                 px[x, y] = tuple(int(round(c*(1-w) + t*w)) for c, t in zip((r, g, b), tgt))
     im.paste(reg, box[:2])
 
-# 1) 사례 kit: 같은 목업 틀이므로 동일 크롭 → Lanczos 업스케일
-SCREEN = (211, 130, 790, 498)            # 모니터 화면 안쪽 579x368 (다섯 장 모두 같은 목업 틀)
-for slug, ext in [("theic","jpg"),("uberhouse","jpg"),("seokyung","jpg"),("aline","jpg"),("luxenova","jpg")]:
-    im = Image.open(R/f"kit/{slug}.{ext}").convert("RGB").crop(SCREEN)
-    if slug == "theic":                  # 대표번호 위젯(화면 x≥506)이 들어가지 않도록 왼쪽 위 500x318만 사용
-        im = im.crop((0, 0, 500, 318))
-    im = im.resize((1032, 656), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.6, percent=70, threshold=2))
-    im.save(A/f"case_{slug}.jpg", quality=93)
+# 1) 사례 카드: 고객사 5곳, PC·모바일 목업(메인 화면 영상의 깨끗한 프레임)
+def hero_frame(slug, t=None):
+    if t is None:
+        return Image.open(R/f"hero/{slug}.png").convert("RGB")
+    with tempfile.TemporaryDirectory() as td:
+        subprocess.run(["ffmpeg","-v","error","-ss",str(t),"-i",str(R/f"hero/{slug}.mp4"),"-frames:v","1",f"{td}/f.png"], check=True)
+        return Image.open(f"{td}/f.png").convert("RGB")
+for slug, t in [("theic",None),("gojegagusoa",None),("shutterplay",None),("mbcmodel",7.0),("uberhouse",None)]:
+    hero_frame(slug, t).resize((1032, 735), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.4, percent=70, threshold=2)).save(A/f"case_{slug}.jpg", quality=93)
 
-# 2) 고재가구소아 반응형 정지 화면 (hero png)
-Image.open(R/"hero/gojegagusoa.png").convert("RGB").resize((902, 643), Image.LANCZOS).save(A/"what_gojegagusoa.jpg", quality=92)
+# 2) '무엇을' 장면: 서경파츠 반응형 화면
+hero_frame("seokyung").resize((902, 643), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.2, percent=60, threshold=2)).save(A/"what_seokyung.jpg", quality=92)
 
-# 3) 대표 사진: 크롭 + 흑백
-ph = Image.open(R/"장영주.jpg").convert("RGB").crop((40, 300, 810, 1019))
-ImageOps.grayscale(ph).convert("RGB").save(A/"rep_jang.jpg", quality=92)
+# 3) '누가' 장면: 신공간디자인연구소 메인 → 스크롤 영상 프레임
+sd = A/"sgg"; sd.mkdir(exist_ok=True)
+for f in sd.glob("*.jpg"): f.unlink()
+subprocess.run(["ffmpeg","-v","error","-i",str(R/"hero/shingonggan.mp4"),"-vsync","0","-q:v","3",str(sd/"f%03d.jpg")], check=True)
+
+# 이전 버전 자산 정리
+for old in ["case_aline.jpg","case_luxenova.jpg","case_seokyung.jpg","what_gojegagusoa.jpg","rep_jang.jpg"]:
+    (A/old).unlink(missing_ok=True)
 
 # 4) 수정 시연 프레임: 필요한 프레임만, 크롭(y74~428) + 설명문 블러 + 패널 하단 흰 페이드
 USE = list(range(18,22)) + [30,31] + list(range(53,71)) + list(range(165,171)) + list(range(225,249))
