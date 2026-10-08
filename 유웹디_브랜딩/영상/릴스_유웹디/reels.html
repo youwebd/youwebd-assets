@@ -58,8 +58,8 @@
   #wf{position:absolute;left:72px;top:560px;width:860px;height:440px;border-radius:28px;border:2px solid #e3e3ea;background:#f6f5f7;overflow:hidden}
   #wf .b{position:absolute;border-radius:8px}
   /* S9 */
-  #s9 .counter{position:absolute;top:1262px;right:148px;font-variant-numeric:tabular-nums;height:44px;font-size:44px;font-weight:600;color:var(--sub);display:flex;gap:12px;white-space:nowrap}
-  .dot{position:absolute;top:1276px;width:16px;height:16px;border-radius:50%;background:#9aa0ab}
+  #s9 .counter{position:absolute;top:1362px;right:148px;font-variant-numeric:tabular-nums;height:44px;font-size:44px;font-weight:600;color:var(--sub);display:flex;gap:12px;white-space:nowrap}
+  .dot{position:absolute;top:1376px;width:16px;height:16px;border-radius:50%;background:#9aa0ab}
   .lens{position:absolute;left:400px;top:1092px;width:520px;height:116px;border-radius:20px;background:#fff;border:3px solid var(--red);box-shadow:0 16px 40px rgba(22,24,29,.22);display:flex;align-items:center;transform-origin:70% 0}
 </style>
 </head>
@@ -67,7 +67,30 @@
 <!-- ============ S1 훅 ============ -->
 <div class="scene" id="s1"><div class="vig"></div>
   <div id="s1h"></div>
-  <div id="chat"></div>
+  <div id="msgr" class="abs" style="left:72px;top:712px;width:868px;height:568px;border-radius:36px;background:#22252d;overflow:hidden">
+    <div style="position:absolute;left:0;top:0;width:868px;height:104px;border-bottom:2px solid #30343d;display:flex;align-items:center;gap:22px;padding:0 30px">
+      <svg viewBox="0 0 24 40" style="width:20px;height:34px"><path d="M20 4 4 20l16 16" fill="none" stroke="#c9ccd3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="width:64px;height:64px;border-radius:50%;background:#3a3e48;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 40 40" style="width:36px;height:36px"><path d="M8 14h24v18H8zM15 14v-4h10v4M8 21h24" fill="none" stroke="#c9ccd3" stroke-width="3" stroke-linejoin="round"/></svg></div>
+      <div style="font-size:48px;font-weight:600;color:#eef0f4;letter-spacing:-.02em">홈페이지 제작업체</div>
+    </div>
+    <div id="hookImg" class="abs" style="left:316px;top:130px;width:524px;height:290px;border-radius:26px;background:#fff;padding:12px">
+      <div style="position:relative;width:500px;height:266px;border-radius:16px;overflow:hidden;background:#fff">
+        <div style="height:40px;display:flex;align-items:center;gap:12px;padding:0 16px"><i style="display:block;width:26px;height:26px;border-radius:50%;background:#16181d"></i><i style="display:block;width:60px;height:8px;border-radius:4px;background:#c9ccd3;margin-left:auto"></i><i style="display:block;width:60px;height:8px;border-radius:4px;background:#c9ccd3"></i></div>
+        <div style="position:absolute;left:0;top:40px;width:500px;height:226px;background:linear-gradient(120deg,#5a4130,#a47a52 60%,#c9a174)">
+          <div style="position:absolute;left:30px;top:14px;font-size:32px;font-weight:600;color:rgba(255,255,255,.85)">영업시간</div>
+          <div style="position:absolute;left:30px;top:68px;font-size:50px;font-weight:700;color:#fff;letter-spacing:-.01em">10:00 – 20:00</div>
+          <svg viewBox="0 0 500 226" style="position:absolute;left:0;top:0;width:500px;height:226px;overflow:visible"><ellipse id="hookEllipse" cx="186" cy="102" rx="178" ry="40" fill="none" stroke="#ff4040" stroke-width="6" pathLength="1" stroke-dasharray="1" transform="rotate(-2 186 102)"/></svg>
+          <div id="hookNew" class="pill" style="left:30px;top:154px;height:58px;padding:0 20px;font-size:44px;font-weight:700;background:#fff;color:#e02424;gap:12px"><svg viewBox="0 0 40 24" style="width:40px;height:24px;flex:none"><path d="M3 12h31M24 3l10 9-10 9" fill="none" stroke="#e02424" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>11:00 – 21:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="bubble" id="reqBubble" style="left:400px;top:440px;width:440px;height:92px;font-size:48px">이 부분만 바꿔 주세요</div>
+    <div id="unread" class="abs" style="left:350px;top:478px;font-size:44px;font-weight:700;color:#f5c542">1</div>
+  </div>
+  <div id="waitChip" class="pill" style="left:0;top:1306px;height:104px;padding:0 40px;gap:16px;font-size:58px;font-weight:600;background:#2a2d35;color:#eef0f4">
+    <svg viewBox="0 0 40 40" style="width:48px;height:48px"><path d="M10 5h20M10 35h20M12 5c0 9 16 9 16 15s-16 6-16 15M28 5c0 9-16 9-16 15s16 6 16 15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>
+    <span>답장 기다린 지</span><span style="position:relative;display:inline-block;width:150px;height:72px;overflow:hidden"><b id="dayP" class="abs" style="left:0;top:0;font-weight:700;color:#ff5a5a;white-space:nowrap;opacity:0"></b><b id="dayN" class="abs" style="left:0;top:0;font-weight:700;color:#ff5a5a;white-space:nowrap">1일째</b></span>
+  </div>
 </div>
 <!-- ============ S2 직접 수정 ============ -->
 <div class="scene grad" id="s2">
@@ -83,6 +106,7 @@
       <img id="lensNew" src="assets/lens_new.jpg" style="width:168px;height:79px;border-radius:10px;box-sizing:content-box">
     </div>
   </div>
+  <div class="pill" id="instant" style="left:72px;top:1118px;height:72px;padding:0 26px;font-size:46px;font-weight:700;background:#fff;color:#c82828;border:3px solid #c82828">바로 반영</div>
   <div class="chip" id="chip1" style="left:72px;top:1236px"></div>
   <div class="chip" id="chip2" style="left:289px;top:1236px"></div>
 </div>
@@ -142,7 +166,7 @@
 <div class="scene" id="s8" style="background:#fff"><div id="s8h"></div><div id="s8c"></div></div>
 <!-- ============ S9 제작 사례 ============ -->
 <div class="scene grad" id="s9">
-  <div class="pill" id="hdClient" style="left:72px;top:300px;height:84px;padding:0 30px;font-size:48px;background:#16181d;color:#fff">열 곳 넘게 맡아 온 고객사 홈페이지</div>
+  <div class="pill" id="hdClient" style="left:72px;top:400px;height:84px;padding:0 30px;font-size:48px;background:#16181d;color:#fff">유웹디가 만든 고객사 홈페이지</div>
   <div id="slides"></div>
   <div id="dots"></div>
   <div class="counter"><span id="cntWrap" style="position:relative;display:inline-block;width:56px;height:44px;overflow:hidden"><span id="cntA" class="abs" style="left:0;top:0"></span><span id="cntB" class="abs" style="left:0;top:0"></span></span><span>/ 05</span></div>
@@ -185,42 +209,28 @@ function ripple(el,lt,t0,dur,cx,cy,d0,d1,o0){
 
 // ================= S1 =================
 const s1l=[ML('s1h','홈페이지 문구 하나',{y:300,size:104,color:'#fff'}),
-          ML('s1h','바꾸는 데',{y:424,size:104,color:'#fff'}),
+          ML('s1h','업체에 맡기고',{y:424,size:104,color:'#fff'}),
           ML('s1h','<span class="hlbox">며칠</span> 기다리셨나요?',{y:548,size:104,color:'#fff'})];
-const chat=$('chat');
-const PUSH=[.75,1.35,1.95];
-const items=[ // y는 채팅 영역 기준(top 740)
-  {kind:'day',text:'월요일',y:940,born:-1},
-  {kind:'img',y:1024,born:-1},
-  {kind:'bubble',text:'이 문구만 바꿔 주세요',y:1280,born:-1},
-  {kind:'day',text:'화요일',y:1316,born:0},
-  {kind:'day',text:'수요일',y:1316,born:1},
-  {kind:'day',text:'목요일',y:1316,born:2}];
-items.forEach(it=>{
-  const d=document.createElement('div');
-  if(it.kind==='day'){d.className='day';d.style.left=(506-72-85)+'px';d.textContent=it.text;}
-  else if(it.kind==='img'){d.className='imgmsg';d.style.left=(540-72)+'px';
-    d.innerHTML='<div class="site"><div class="nav"><i style="width:30px;background:#16181d"></i><i style="width:34px;margin-left:auto"></i><i style="width:34px"></i><i style="width:34px"></i></div>'
-      +'<div class="hero"><i style="left:26px;top:60px;width:196px;height:20px"></i><i style="left:26px;top:92px;width:132px;height:10px;opacity:.7"></i><i style="left:26px;top:122px;width:78px;height:22px;border-radius:11px;opacity:.9"></i></div>'
-      +'<svg viewBox="0 0 372 212" style="position:absolute;left:0;top:0;width:372px;height:212px;overflow:visible"><ellipse id="hookEllipse" cx="124" cy="98" rx="122" ry="30" fill="none" stroke="#ff4646" stroke-width="5" pathLength="1" stroke-dasharray="1" transform="rotate(-3 124 98)"/></svg></div>';}
-  else{d.className='bubble';d.style.left=(400-72)+'px';d.style.width='540px';d.style.height='100px';d.style.fontSize='52px';d.textContent=it.text;}
-  chat.appendChild(d); it.el=d;
-});
+const DAYS=[0,0.9,1.7];
 function s1(lt){
-  tf($('s1h'),'scale('+lerp(1.02,1,E.out3(P(lt,0,.3)))+')'); $('s1h').style.transformOrigin='72px 300px'; op($('s1h'),1-P(lt,2.96,3.04));
-  s1l.forEach(s=>tf(s,'none'));
-  items.forEach((it,i)=>{
-    let off=0; PUSH.forEach((pt,k)=>{ if(k>it.born) off+=100*E.out3(P(lt,pt,pt+.22)); });
-    let y=it.y-off, o=1;
-    if(it.born>=0){ const pt=PUSH[it.born]; const a=E.out3(P(lt,pt,pt+.22)); y+= (1-a)*70; o= lt<pt?0:a; }
-    it.el.style.top=(y-740)+'px'; op(it.el,o*(it.kind!=='day'?lerp(1,.7,P(lt,2.55,2.85)):1));
-  });
-  document.getElementById('hookEllipse').style.strokeDashoffset=1-E.out3(P(lt,.10,.45));
-  const th=items[5].el, red=lt>=2.20;
-  th.style.background=red?'#c82828':'#2a2d35'; th.style.color=red?'#fff':'#a9afbb';
-  const sh=(lt>=2.20&&lt<2.44)?Math.sin((lt-2.20)/.24*Math.PI*6)*8:0;
-  th.style.marginLeft=sh+'px';
-  const sc=lerp(1,.97,E.io3(P(lt,2.55,2.85))); chat.style.transform='scale('+sc+')'; chat.style.transformOrigin='434px 340px';
+  tf($('s1h'),'scale('+lerp(1.02,1,E.out3(P(lt,0,.3)))+')'); $('s1h').style.transformOrigin='72px 300px'; op($('s1h'),1-P(lt,3.36,3.44));
+  s1l.forEach(sp=>tf(sp,'none'));
+  $('hookEllipse').style.strokeDashoffset=1-E.out3(P(lt,.10,.40));
+  const nw=E.out3(P(lt,.35,.55)); op($('hookNew'),nw); tf($('hookNew'),'translateY('+((1-nw)*14)+'px)');
+  // 기다린 날 수 카운터
+  let k=0; DAYS.forEach((d,i)=>{ if(lt>=d) k=i; });
+  const dn=$('dayN'); dn.textContent=(k+1)+'일째';
+  // 슬롯 회전: 이전 숫자가 위로 빠지는 동안 새 숫자가 아래에서 올라와, 숫자가 비는 프레임이 없게 함
+  const roll=k>0?E.out3(P(lt,DAYS[k],DAYS[k]+.18)):1, dp=$('dayP'); dp.textContent=k+'일째';
+  tf(dn,'translateY('+((1-roll)*100)+'%)'); op(dn,.25+.75*roll);
+  tf(dp,'translateY('+(-roll*100)+'%)'); op(dp,k>0&&roll<1?1-roll:0);
+  const wc=$('waitChip'); if(!wc._w){ wc._w=wc.offsetWidth; wc.style.left=(540-wc._w/2)+'px'; }
+  const red=lt>=1.80; wc.style.background=red?'#c82828':'#2a2d35'; dn.style.color=$('dayP').style.color=red?'#fff':'#ff5a5a';
+  const sh=(lt>=1.80&&lt<2.04)?Math.sin((lt-1.80)/.24*Math.PI*6)*9:0;
+  let pulse=1; DAYS.slice(1).forEach(d=>{ if(lt>=d&&lt<d+.2) pulse=1+.06*Math.sin(P(lt,d,d+.2)*Math.PI); });
+  tf(wc,'translateX('+sh+'px) scale('+pulse+')');
+  const hb=document.querySelector('#s1h .hlbox'); tf(hb,'scale('+pulse+')'); hb.style.display='inline-block';
+  const sc=lerp(1,.98,E.io3(P(lt,2.95,3.30))); tf($('msgr'),'scale('+sc+')'); $('msgr').style.transformOrigin='434px 284px';
 }
 
 // ================= S2 =================
@@ -269,6 +279,9 @@ function s2(lt){
   const b1=(t>=4.70&&t<4.90)?1+.06*Math.sin(P(t,4.70,4.90)*Math.PI):((t>=5.55&&t<5.75)?1+.05*Math.sin(P(t,5.55,5.75)*Math.PI):1);
   tf(c1,'scale('+(lerp(.8,1,ap1)*b1)+')'); op(c1,clamp(ap1*1.3)); c1.style.transformOrigin='left center';
   tf(c2,'scale('+(lerp(.8,1,ap2)*b1)+')'); op(c2,clamp(ap2*1.3)); c2.style.transformOrigin='left center';
+  // '바로 반영' : 문구 완성 직후, 사진 교체 직후
+  const ia=Math.max(E.back(P(t,3.84,4.06))*(1-P(t,4.50,4.64)), E.back(P(t,5.38,5.60))*(1-P(t,5.92,6.0)));
+  op($('instant'),clamp(ia*1.4)); tf($('instant'),'scale('+lerp(.8,1,clamp(ia,0,1.2))+')'); $('instant').style.transformOrigin='left center';
   // 확대 렌즈 1: 입력창 타이핑
   const la=E.out3(P(t,3.42,3.62))*(1-E.in3(P(t,4.50,4.66)));
   op($('lensText'),la); tf($('lensText'),'scale('+lerp(.9,1,E.out3(P(t,3.42,3.62)))+')');
@@ -395,21 +408,21 @@ const SLIDES=[
   {img:'shutterplay',ind:'스튜디오',name:'셔터플레이'},
   {img:'mbcmodel',ind:'아카데미',name:'MBC 모델센터'},
   {img:'uberhouse',ind:'건축·인테리어',name:'우버하우스'}];
-const S9A=24.7, S9B=32.8;                                             // S9 시작·끝(아이리스 끝)
-const SW=[[26.15,26.40],[27.75,28.00],[29.30,29.60],[30.95,31.20]];   // 스와이프
+const S9A=25.1, S9B=33.2;                                             // S9 시작·끝(아이리스 끝)
+const SW=[[26.55,26.80],[28.15,28.40],[29.70,30.00],[31.35,31.60]];   // 스와이프
 const dotX=i=>92+i*44;
 SLIDES.forEach((s,i)=>{
   const g=document.createElement('div'); g.className='abs'; g.style.cssText='left:0;top:0;width:1080px;height:1920px';
   g.innerHTML='<div class="txt abs" style="left:0;top:0">'
-    +'<div class="pill" style="left:72px;top:412px;height:68px;padding:0 24px;font-size:44px;background:#fff;color:#16181d">'+s.ind+'</div>'
-    +'<div class="ml" style="left:72px;top:500px;font-size:88px"><span>'+s.name+'</span></div></div>'
-    +'<div class="card cardS" style="left:72px;top:630px;width:860px;height:613px;border-radius:28px;background:#dadae0;box-shadow:0 30px 60px rgba(22,24,29,.18)">'
+    +'<div class="pill" style="left:72px;top:512px;height:68px;padding:0 24px;font-size:44px;background:#fff;color:#16181d">'+s.ind+'</div>'
+    +'<div class="ml" style="left:72px;top:600px;font-size:88px"><span>'+s.name+'</span></div></div>'
+    +'<div class="card cardS" style="left:72px;top:730px;width:860px;height:613px;border-radius:28px;background:#dadae0;box-shadow:0 30px 60px rgba(22,24,29,.18)">'
     +'<img src="assets/case_'+s.img+'.jpg" style="width:860px;height:613px;object-fit:cover;transform-origin:45% 45%">'
     +'</div>';
   $('slides').appendChild(g); s.el=g; s.txt=g.querySelector('.txt'); s.card=g.querySelector('.cardS'); s.im=g.querySelector('img');
 });
 for(let i=0;i<5;i++){const d=document.createElement('div'); d.className='dot'; d.style.left=(dotX(i)-8)+'px'; $('dots').appendChild(d);}
-const act=document.createElement('div'); act.className='abs'; act.style.cssText='top:1276px;width:40px;height:16px;border-radius:8px;background:#c82828'; $('dots').appendChild(act);
+const act=document.createElement('div'); act.className='abs'; act.style.cssText='top:1376px;width:40px;height:16px;border-radius:8px;background:#c82828'; $('dots').appendChild(act);
 function s9(lt){
   const t=lt+S9A;
   // 각 장 위치
@@ -460,10 +473,10 @@ function s10(lt){
 
 // ================= 장면 합성 =================
 // [id, 시작, 함수, 프리롤]  프리롤: 위로 밀며 들어오는 장면은 전환 중에 내용이 함께 올라오도록 내부 시계를 0.25초 앞당김
-const SC=[['s1',0,s1,0],['s2',3.2,s2,0],['s3',6.2,s3,.25],['s4',8.65,s4,.25],['s5',12.2,s5,.25],['s6',14.75,s6,.25],['s7',17.8,s7,0],['s8',20.2,s8,0],['s9',S9A,s9,0],['s10',S9B,s10,0]];
-const TR=[{k:'circle',t0:2.90,t1:3.20,cx:506,cy:1348},{k:'up',t0:5.95,t1:6.20},{k:'up',t0:8.40,t1:8.65},{k:'up',t0:11.95,t1:12.20},{k:'up',t0:14.50,t1:14.75},
-  {k:'circle',t0:17.50,t1:17.80,cx:502,cy:770},{k:'circle',t0:19.90,t1:20.20,cx:540,cy:500},{k:'left',t0:24.45,t1:24.70},{k:'circle',t0:32.50,t1:32.80,cx:dotX(4),cy:1284}];
-const DUR=36.1;
+const SC=[['s1',0,s1,0],['s2',3.6,s2,0],['s3',6.6,s3,.25],['s4',9.05,s4,.25],['s5',12.6,s5,.25],['s6',15.15,s6,.25],['s7',18.2,s7,0],['s8',20.6,s8,0],['s9',S9A,s9,0],['s10',S9B,s10,0]];
+const TR=[{k:'circle',t0:3.30,t1:3.60,cx:540,cy:1358},{k:'up',t0:6.35,t1:6.60},{k:'up',t0:8.80,t1:9.05},{k:'up',t0:12.35,t1:12.60},{k:'up',t0:14.90,t1:15.15},
+  {k:'circle',t0:17.90,t1:18.20,cx:502,cy:770},{k:'circle',t0:20.30,t1:20.60,cx:540,cy:500},{k:'left',t0:24.85,t1:25.10},{k:'circle',t0:32.90,t1:33.20,cx:dotX(4),cy:1384}];
+const DUR=36.5;
 function seek(t){
   SC.forEach(([id,a,fn,pre],i)=>{
     const el=$(id); const tin=i>0?TR[i-1]:null, tout=TR[i]||null;
