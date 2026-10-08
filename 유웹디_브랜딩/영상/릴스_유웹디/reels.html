@@ -54,7 +54,7 @@
   /* S9 */
   #s9 .counter{position:absolute;top:1226px;right:148px;font-variant-numeric:tabular-nums;height:44px;font-size:44px;font-weight:600;color:var(--sub);display:flex;gap:12px;white-space:nowrap}
   .dot{position:absolute;top:1240px;width:16px;height:16px;border-radius:50%;background:#9aa0ab}
-  .lens{position:absolute;left:400px;top:952px;width:520px;height:116px;border-radius:20px;background:#fff;border:3px solid var(--red);box-shadow:0 16px 40px rgba(22,24,29,.22);display:flex;align-items:center;transform-origin:70% 0}
+  .lens{position:absolute;left:400px;top:1092px;width:520px;height:116px;border-radius:20px;background:#fff;border:3px solid var(--red);box-shadow:0 16px 40px rgba(22,24,29,.22);display:flex;align-items:center;transform-origin:70% 0}
 </style>
 </head>
 <body>
@@ -77,8 +77,8 @@
       <img id="lensNew" src="assets/lens_new.jpg" style="width:168px;height:79px;border-radius:10px;box-sizing:content-box">
     </div>
   </div>
-  <div class="chip" id="chip1" style="left:72px;top:1110px"></div>
-  <div class="chip" id="chip2" style="left:289px;top:1110px"></div>
+  <div class="chip" id="chip1" style="left:72px;top:1236px"></div>
+  <div class="chip" id="chip2" style="left:289px;top:1236px"></div>
 </div>
 <!-- ============ S3 누가 ============ -->
 <div class="scene" id="s3" style="background:#fff">
@@ -230,16 +230,16 @@ function frameAt(t){ // t = 절대 시간
   return 248;
 }
 let curF=null;
-const RECT={input:[783,888,937,943],title:[64,858,430,913],list:[783,928,937,1050],hero:[64,750,749,1065]};
+const RECT={input:[783,888,937,943],title:[64,858,430,913],list:[783,928,937,1050],hero:[50,746,754,1066]};
 function setRing(r,pulse){const s=pulse||1, cx=(r[0]+r[2])/2, cy=(r[1]+r[3])/2, w=(r[2]-r[0])*s, h=(r[3]-r[1])*s;
   const el=$('hring'); el.style.left=(cx-w/2)+'px'; el.style.top=(cy-h/2)+'px'; el.style.width=w+'px'; el.style.height=h+'px';}
 const lerpR=(a,b,x)=>a.map((v,i)=>lerp(v,b[i],x));
 function chipState(el,st,text){el.className='chip '+st; el.textContent=text;}
 function s2(lt){
   const t=lt+3.2;
-  rise(s2l[0],lt,.05); rise(s2l[1],lt,.13);
-  const g=E.out3(P(lt,0,.25)); const zoom=lerp(1,1.02,P(lt,.25,3.0));
-  tf($('s2grp'),'translateY('+((1-g)*60)+'px) scale('+zoom+')'); op($('s2grp'),lt<0?0:g);
+  rise(s2l[0],t,2.96); rise(s2l[1],t,3.02);
+  const g=E.out3(P(t,2.94,3.16)); const zoom=lerp(1,1.02,P(t,3.20,6.20));
+  tf($('s2grp'),'translateY('+((1-g)*60)+'px) scale('+zoom+')'); op($('s2grp'),g);
   const f=frameAt(t); if(curF!==f){ if(curF) FR[curF].style.display='none'; FR[f].style.display='block'; curF=f; }
   const punch=(t>=5.35&&t<5.41)?(1+.03*Math.sin(P(t,5.35,5.41)*Math.PI)):1; tf(vid,'scale('+punch+')');
   // 하이라이트 링
@@ -247,15 +247,15 @@ function s2(lt){
   if(t>=3.80) r=lerpR(RECT.input,RECT.title,E.io3(P(t,3.80,3.98)));
   if(t>=4.70) r=lerpR(RECT.title,RECT.list,E.io3(P(t,4.70,4.88)));
   if(t>=5.35) r=lerpR(RECT.list,RECT.hero,E.out3(P(t,5.35,5.50)));
-  const pulse=1+.025*Math.sin((t-3.42)/.8*Math.PI*2)*(t<5.35?1:.4);
+  const pulse=1+.025*Math.sin((t-3.42)/.8*Math.PI*2)*(t<5.35?1:0);
   setRing(r,pulse); op($('hring'),E.out3(P(t,3.42,3.55)));
   // 스텝 칩
   const c1=$('chip1'), c2=$('chip2');
   if(t<4.70){chipState(c1,'on','① 문구'); chipState(c2,'wait','② 사진');}
-  else if(t<5.80){chipState(c1,'done','✓ 문구'); chipState(c2,'on','② 사진');}
+  else if(t<5.55){chipState(c1,'done','✓ 문구'); chipState(c2,'on','② 사진');}
   else {chipState(c1,'done','✓ 문구'); chipState(c2,'done','✓ 사진');}
-  const ap1=E.back(P(lt,.15,.40)), ap2=E.back(P(lt,.21,.46));
-  const b1=(t>=4.70&&t<4.90)?1+.06*Math.sin(P(t,4.70,4.90)*Math.PI):((t>=5.80&&t<6.00)?1+.05*Math.sin(P(t,5.80,6.00)*Math.PI):1);
+  const ap1=E.back(P(t,3.08,3.33)), ap2=E.back(P(t,3.14,3.39));
+  const b1=(t>=4.70&&t<4.90)?1+.06*Math.sin(P(t,4.70,4.90)*Math.PI):((t>=5.55&&t<5.75)?1+.05*Math.sin(P(t,5.55,5.75)*Math.PI):1);
   tf(c1,'scale('+(lerp(.8,1,ap1)*b1)+')'); op(c1,clamp(ap1*1.3)); c1.style.transformOrigin='left center';
   tf(c2,'scale('+(lerp(.8,1,ap2)*b1)+')'); op(c2,clamp(ap2*1.3)); c2.style.transformOrigin='left center';
   // 확대 렌즈 1: 입력창 타이핑
@@ -298,12 +298,13 @@ function svgIcon(name,stroke,w){return '<svg viewBox="0 0 52 52"><g fill="none" 
 const s4cards=[['wait','고치기 어려울 때',610],['receipt','견적이 막막할 때',780],['browser','사이트가 없을 때',950]].map(([ic,tx,y])=>{
   const c=document.createElement('div'); c.className='lcard'; c.style.top=y+'px'; c.style.height='140px'; c.style.background='#fff'; c.style.boxShadow='0 12px 32px rgba(22,24,29,.08)';
   c.innerHTML='<div class="icn" style="background:#fbeeee">'+svgIcon(ic,'#c82828',4)+'</div><div style="position:absolute;left:156px;font-size:60px;font-weight:600;letter-spacing:-.02em;white-space:nowrap">'+tx+'</div>';
-  $('s4c').appendChild(c); c.querySelectorAll('.ic *').forEach(p=>{p.setAttribute('pathLength','1');p.style.strokeDasharray='1';}); return c;});
+  $('s4c').appendChild(c); c.querySelectorAll('.ic *:not([stroke-dasharray])').forEach(p=>{p.setAttribute('pathLength','1');p.style.strokeDasharray='1';}); return c;});
 function s4(lt){
   rise(s4l[0],lt,.05); rise(s4l[1],lt,.12);
   [.40,.75,1.10].forEach((t0,i)=>{ const c=s4cards[i]; const a=E.back(P(lt,t0,t0+.3)); const o=clamp(P(lt,t0,t0+.15));
     tf(c,'translateX('+((1-a)*80)+'px)'); op(c,o);
-    const d=P(lt,t0+.1,t0+.4); c.querySelectorAll('.ic *').forEach(p=>p.style.strokeDashoffset=1-d); });
+    const d=P(lt,t0+.1,t0+.4); c.querySelectorAll('.ic *:not([stroke-dasharray])').forEach(p=>p.style.strokeDashoffset=1-d);
+    c.querySelectorAll('.ic [stroke-dasharray]').forEach(p=>p.style.opacity=d); });
 }
 
 // ================= S5 =================
@@ -385,10 +386,9 @@ SLIDES.forEach((s,i)=>{
   const g=document.createElement('div'); g.className='abs'; g.style.cssText='left:0;top:0;width:1080px;height:1920px';
   g.innerHTML='<div class="txt abs" style="left:0;top:0">'
     +'<div class="pill" style="left:72px;top:412px;height:68px;padding:0 24px;font-size:44px;background:#fff;color:#16181d">'+s.ind+'</div>'
-    +(s.demo?'<div class="pill dchip" style="top:412px;height:68px;padding:0 24px;font-size:44px;background:#c82828;color:#fff">데모 사이트</div>':'')
     +'<div class="ml" style="left:72px;top:500px;font-size:88px"><span>'+s.name+'</span></div></div>'
-    +'<div class="card cardS" style="left:72px;top:630px;width:860px;height:565px;border-radius:28px;background:#dadae0;box-shadow:0 30px 60px rgba(22,24,29,.18)">'
-    +'<img src="assets/case_'+s.img+'.jpg" style="width:860px;height:565px;object-fit:cover;transform-origin:30% 35%">'
+    +'<div class="card cardS" style="left:72px;top:630px;width:860px;height:547px;border-radius:28px;background:#dadae0;box-shadow:0 30px 60px rgba(22,24,29,.18)">'
+    +'<img src="assets/case_'+s.img+'.jpg" style="width:860px;height:547px;object-fit:cover;transform-origin:30% 35%">'
     +(s.demo?'<div class="pill" style="left:24px;top:24px;height:60px;padding:0 22px;font-size:44px;background:#c82828;color:#fff;box-shadow:0 6px 16px rgba(0,0,0,.25)">데모</div>':'')+'</div>';
   $('slides').appendChild(g); s.el=g; s.txt=g.querySelector('.txt'); s.card=g.querySelector('.cardS'); s.im=g.querySelector('img'); s.dchip=g.querySelector('.dchip');
 });
@@ -412,7 +412,7 @@ function s9(lt){
     tf(s.card,'translateX('+x+'px) scale('+sc+')');
     // 문구: 들어올 때 마지막 0.12초 페이드인, 나갈 때 처음 0.08초 페이드아웃
     let to=1;
-    if(inW) to=Math.min(to,P(t,inW[1]-.12,inW[1]));
+    if(inW) to=Math.min(to, inW===SW[2] ? P(t,29.47,29.59) : P(t,inW[0]+.08,inW[0]+.20));   // 데모로 넘어갈 때는 머리 알약 전환 뒤
     if(i===0) to=E.out3(P(t,S9A+.05,S9A+.25));
     if(outW) to=Math.min(to,1-P(t,outW[0],outW[0]+.08));
     op(s.txt,to); tf(s.txt,'translateY('+((1-to)*16)+'px)');
@@ -420,7 +420,7 @@ function s9(lt){
     const kb=lerp(1,1.04,P(t,inW?inW[1]:S9A,outW?outW[0]:S9B)); tf(s.im,'scale('+kb+')');
   });
   // 머리 알약 모핑 (고객사 → 데모)
-  const mo=E.in3(P(t,29.36,29.48)), mi=E.out3(P(t,29.54,29.66));
+  const mo=E.in3(P(t,29.34,29.45)), mi=E.out3(P(t,29.45,29.56));
   op($('hdClient'),1-mo); tf($('hdClient'),'scale('+lerp(1,.94,mo)+')'); $('hdClient').style.transformOrigin='left center';
   op($('hdDemo'),mi); tf($('hdDemo'),'scale('+lerp(.94,1,mi)+')'); $('hdDemo').style.transformOrigin='left center';
   // 점 + 카운터

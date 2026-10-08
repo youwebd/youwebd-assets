@@ -14,17 +14,39 @@ def blur_box(im, box, radius=10, tint=None):
         ov = Image.new("RGB", reg.size, tint[:3]); reg = Image.blend(reg, ov, tint[3])
     im.paste(reg, box[:2])
 
+def desc_placeholder(im, box=(0, 242, 224, 290)):
+    """사이트 설명문(숫자 포함)을 지우고 반투명 흰 줄 두 개로 대체"""
+    x0, y0, x1, y1 = box
+    big = im.crop((x0, y0 - 16, x1 + 30, y1 + 16)).filter(ImageFilter.GaussianBlur(26))
+    im.paste(big.crop((0, 16, x1 - x0, 16 + y1 - y0)), (x0, y0))
+    ov = Image.new("RGBA", im.size, (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
+    d.rounded_rectangle((x0 + 8, y0 + 12, x0 + 196, y0 + 21), 5, fill=(255, 255, 255, 120))
+    d.rounded_rectangle((x0 + 8, y0 + 29, x0 + 146, y0 + 38), 5, fill=(255, 255, 255, 120))
+    im.paste(Image.alpha_composite(im.convert("RGBA"), ov).convert("RGB"))
+
+def pink_to_blue(im, box=(0, 296, 150, 346), blue=(81, 98, 169)):
+    """사진 단계 프레임의 분홍 버튼을 문구 단계와 같은 파랑으로"""
+    reg = im.crop(box); px = reg.load(); bl = 0.299*blue[0] + 0.587*blue[1] + 0.114*blue[2]
+    for y in range(reg.size[1]):
+        for x in range(reg.size[0]):
+            r, g, b = px[x, y]
+            if r - g > 40 and r > 100:
+                w = min(1.0, (r - g - 40) / 50); lum = 0.299*r + 0.587*g + 0.114*b; k = lum / 119.0
+                tgt = [min(255, c * k * (119.0 / bl) * (bl / 119.0)) for c in blue]
+                px[x, y] = tuple(int(round(c*(1-w) + t*w)) for c, t in zip((r, g, b), tgt))
+    im.paste(reg, box[:2])
+
 # 1) 사례 kit: 같은 목업 틀이므로 동일 크롭 → Lanczos 업스케일
-CROP = (170, 90, 840, 508)               # 670x418 (받침대 조각 제외)
+SCREEN = (211, 130, 790, 498)            # 모니터 화면 안쪽 579x368 (다섯 장 모두 같은 목업 틀)
 for slug, ext in [("theic","jpg"),("uberhouse","jpg"),("seokyung","jpg"),("aline","jpg"),("luxenova","jpg")]:
-    im = Image.open(R/f"kit/{slug}.{ext}").convert("RGB").crop(CROP)
-    if slug == "theic":                  # 초록 플로팅 위젯(고객사 대표번호): 블러 + 어두운 틴트 + 페더
-        box = (540, 254, 630, 404)
-        reg = im.crop(box).filter(ImageFilter.GaussianBlur(14))
-        reg = Image.blend(reg, Image.new("RGB", reg.size, (14, 38, 46)), 0.62)
-        m = Image.new("L", reg.size, 0); ImageDraw.Draw(m).rounded_rectangle((8, 8, reg.size[0]-9, reg.size[1]-9), 14, fill=255)
-        im.paste(reg, box[:2], m.filter(ImageFilter.GaussianBlur(5)))
-    im.resize((906, 565), Image.LANCZOS).save(A/f"case_{slug}.jpg", quality=92)
+    im = Image.open(R/f"kit/{slug}.{ext}").convert("RGB").crop(SCREEN)
+    if slug == "theic":                  # 초록 플로팅 위젯(고객사 대표번호) → 왼쪽 회로기판 질감을 좌우 반전해 덮음
+        tgt = (498, 214, 579, 370); w = tgt[2] - tgt[0]
+        src = im.crop((tgt[0] - w, tgt[1], tgt[0], tgt[3])).transpose(Image.FLIP_LEFT_RIGHT)
+        m = Image.new("L", src.size, 0); ImageDraw.Draw(m).rectangle((12, 12, w, src.size[1] - 13), fill=255)
+        im.paste(src, tgt[:2], m.filter(ImageFilter.GaussianBlur(8)))
+    im = im.resize((1032, 656), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.6, percent=70, threshold=2))
+    im.save(A/f"case_{slug}.jpg", quality=93)
 
 # 2) 고재가구소아 반응형 정지 화면 (hero png)
 Image.open(R/"hero/gojegagusoa.png").convert("RGB").resize((902, 643), Image.LANCZOS).save(A/"what_gojegagusoa.jpg", quality=92)
@@ -40,7 +62,8 @@ with tempfile.TemporaryDirectory() as td:
     od = A/"ondam"; od.mkdir(exist_ok=True)
     for n in USE:
         im = Image.open(f"{td}/f{n:03d}.png").convert("RGB").crop((0, 74, 960, 428))   # 960x354
-        blur_box(im, (0, 242, 224, 290), radius=8, tint=(255, 255, 255, 0.15))        # 사이트 설명문('20년' 포함)
+        desc_placeholder(im)                                                           # 사이트 설명문('20년' 포함) 제거
+        if n >= 165: pink_to_blue(im)                                                  # 사진 단계 버튼 색을 문구 단계와 맞춤
         # 패널 하단 잘린 줄 → 흰색 페이드
         g = Image.new("L", (200, 24)); dr = ImageDraw.Draw(g)
         for y in range(24): dr.line([(0,y),(200,y)], fill=int(255*y/23))
@@ -54,6 +77,6 @@ with tempfile.TemporaryDirectory() as td:
     # 렌즈용 썸네일: 바뀌기 전/후 사이트 히어로 (사이트 영역 0~755)
     for name, n in [("old", 168), ("new", 248)]:
         th = Image.open(f"{td}/f{n:03d}.png").convert("RGB").crop((0, 74, 755, 428))
-        blur_box(th, (0, 242, 224, 290), radius=8, tint=(255, 255, 255, 0.15))
+        desc_placeholder(th); pink_to_blue(th)
         th.resize((336, 158), Image.LANCZOS).save(A/f"lens_{name}.jpg", quality=92)
 print("ok", len(USE), "frames")
