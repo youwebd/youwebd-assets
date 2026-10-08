@@ -17,8 +17,10 @@ def blur_box(im, box, radius=10, tint=None):
 def desc_placeholder(im, box=(0, 242, 224, 290)):
     """사이트 설명문(숫자 포함)을 지우고 반투명 흰 줄 두 개로 대체"""
     x0, y0, x1, y1 = box
-    big = im.crop((x0, y0 - 16, x1 + 30, y1 + 16)).filter(ImageFilter.GaussianBlur(26))
-    im.paste(big.crop((0, 16, x1 - x0, 16 + y1 - y0)), (x0, y0))
+    pad = 18
+    big = im.crop((max(0, x0 - pad), y0 - pad, x1 + pad, y1 + pad)).filter(ImageFilter.GaussianBlur(26))
+    m = Image.new("L", big.size, 0); ImageDraw.Draw(m).rounded_rectangle((pad // 2, pad // 2, big.size[0] - pad // 2, big.size[1] - pad // 2), 12, fill=255)
+    im.paste(big, (max(0, x0 - pad), y0 - pad), m.filter(ImageFilter.GaussianBlur(7)))
     ov = Image.new("RGBA", im.size, (0, 0, 0, 0)); d = ImageDraw.Draw(ov)
     d.rounded_rectangle((x0 + 8, y0 + 12, x0 + 196, y0 + 21), 5, fill=(255, 255, 255, 120))
     d.rounded_rectangle((x0 + 8, y0 + 29, x0 + 146, y0 + 38), 5, fill=(255, 255, 255, 120))
@@ -40,11 +42,8 @@ def pink_to_blue(im, box=(0, 296, 150, 346), blue=(81, 98, 169)):
 SCREEN = (211, 130, 790, 498)            # 모니터 화면 안쪽 579x368 (다섯 장 모두 같은 목업 틀)
 for slug, ext in [("theic","jpg"),("uberhouse","jpg"),("seokyung","jpg"),("aline","jpg"),("luxenova","jpg")]:
     im = Image.open(R/f"kit/{slug}.{ext}").convert("RGB").crop(SCREEN)
-    if slug == "theic":                  # 초록 플로팅 위젯(고객사 대표번호) → 왼쪽 회로기판 질감을 좌우 반전해 덮음
-        tgt = (498, 214, 579, 370); w = tgt[2] - tgt[0]
-        src = im.crop((tgt[0] - w, tgt[1], tgt[0], tgt[3])).transpose(Image.FLIP_LEFT_RIGHT)
-        m = Image.new("L", src.size, 0); ImageDraw.Draw(m).rectangle((12, 12, w, src.size[1] - 13), fill=255)
-        im.paste(src, tgt[:2], m.filter(ImageFilter.GaussianBlur(8)))
+    if slug == "theic":                  # 대표번호 위젯(화면 x≥506)이 들어가지 않도록 왼쪽 위 500x318만 사용
+        im = im.crop((0, 0, 500, 318))
     im = im.resize((1032, 656), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.6, percent=70, threshold=2))
     im.save(A/f"case_{slug}.jpg", quality=93)
 

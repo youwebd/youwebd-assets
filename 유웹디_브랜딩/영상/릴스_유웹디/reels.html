@@ -43,7 +43,7 @@
   #browser .bar i{width:13px;height:13px;border-radius:50%;background:#d5d7dd;display:block}
   #vid{position:absolute;left:0;top:44px;width:880px;height:325px;overflow:hidden}
   #vid img{position:absolute;left:0;top:0;width:880px;height:325px;display:none}
-  .hring{position:absolute;border:4px solid var(--red);border-radius:12px;box-shadow:0 0 0 8px rgba(200,40,40,.22),0 0 18px rgba(200,40,40,.35)}
+  .hring{position:absolute;border:4px solid var(--red);border-radius:12px;box-shadow:0 0 0 3px rgba(200,40,40,.18),0 0 10px rgba(200,40,40,.28)}
   /* S4 / S8 cards */
   .lcard{position:absolute;left:72px;width:860px;border-radius:28px;display:flex;align-items:center}
   .icn{position:absolute;left:28px;width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center}
@@ -197,7 +197,7 @@ items.forEach(it=>{
   d.textContent=it.text; chat.appendChild(d); it.el=d;
 });
 function s1(lt){
-  tf($('s1h'),'scale('+lerp(1.02,1,E.out3(P(lt,0,.3)))+')'); $('s1h').style.transformOrigin='72px 300px';
+  tf($('s1h'),'scale('+lerp(1.02,1,E.out3(P(lt,0,.3)))+')'); $('s1h').style.transformOrigin='72px 300px'; op($('s1h'),1-P(lt,2.96,3.04));
   s1l.forEach(s=>tf(s,'none'));
   items.forEach((it,i)=>{
     let off=0; PUSH.forEach((pt,k)=>{ if(k>it.born) off+=100*E.out3(P(lt,pt,pt+.22)); });
@@ -230,7 +230,7 @@ function frameAt(t){ // t = 절대 시간
   return 248;
 }
 let curF=null;
-const RECT={input:[783,888,937,943],title:[64,858,430,913],list:[783,928,937,1050],hero:[50,746,754,1066]};
+const RECT={input:[783,888,937,943],title:[70,850,438,922],list:[783,928,937,1050],hero:[50,746,754,1066]};
 function setRing(r,pulse){const s=pulse||1, cx=(r[0]+r[2])/2, cy=(r[1]+r[3])/2, w=(r[2]-r[0])*s, h=(r[3]-r[1])*s;
   const el=$('hring'); el.style.left=(cx-w/2)+'px'; el.style.top=(cy-h/2)+'px'; el.style.width=w+'px'; el.style.height=h+'px';}
 const lerpR=(a,b,x)=>a.map((v,i)=>lerp(v,b[i],x));
@@ -412,7 +412,7 @@ function s9(lt){
     tf(s.card,'translateX('+x+'px) scale('+sc+')');
     // 문구: 들어올 때 마지막 0.12초 페이드인, 나갈 때 처음 0.08초 페이드아웃
     let to=1;
-    if(inW) to=Math.min(to, inW===SW[2] ? P(t,29.47,29.59) : P(t,inW[0]+.08,inW[0]+.20));   // 데모로 넘어갈 때는 머리 알약 전환 뒤
+    if(inW) to=Math.min(to, inW===SW[2] ? P(t,29.43,29.55) : P(t,inW[0]+.08,inW[0]+.20));   // 데모로 넘어갈 때는 머리 알약 전환 뒤
     if(i===0) to=E.out3(P(t,S9A+.05,S9A+.25));
     if(outW) to=Math.min(to,1-P(t,outW[0],outW[0]+.08));
     op(s.txt,to); tf(s.txt,'translateY('+((1-to)*16)+'px)');
@@ -420,7 +420,7 @@ function s9(lt){
     const kb=lerp(1,1.04,P(t,inW?inW[1]:S9A,outW?outW[0]:S9B)); tf(s.im,'scale('+kb+')');
   });
   // 머리 알약 모핑 (고객사 → 데모)
-  const mo=E.in3(P(t,29.34,29.45)), mi=E.out3(P(t,29.45,29.56));
+  const mo=E.in3(P(t,29.32,29.42)), mi=E.out3(P(t,29.42,29.52));
   op($('hdClient'),1-mo); tf($('hdClient'),'scale('+lerp(1,.94,mo)+')'); $('hdClient').style.transformOrigin='left center';
   op($('hdDemo'),mi); tf($('hdDemo'),'scale('+lerp(.94,1,mi)+')'); $('hdDemo').style.transformOrigin='left center';
   // 점 + 카운터
