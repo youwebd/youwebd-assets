@@ -45,7 +45,7 @@ def hero_frame(slug, t=None):
     with tempfile.TemporaryDirectory() as td:
         subprocess.run(["ffmpeg","-v","error","-ss",str(t),"-i",str(R/f"hero/{slug}.mp4"),"-frames:v","1",f"{td}/f.png"], check=True)
         return Image.open(f"{td}/f.png").convert("RGB")
-for slug, t in [("theic",None),("gojegagusoa",None),("shutterplay",None),("mbcmodel",7.0),("uberhouse",None)]:
+for slug, t in [("theic",None),("gojegagusoa",None),("shutterplay",None),("mbcmodel",None),("uberhouse",None)]:
     hero_frame(slug, t).resize((1032, 735), Image.LANCZOS).filter(ImageFilter.UnsharpMask(radius=1.4, percent=70, threshold=2)).save(A/f"case_{slug}.jpg", quality=93)
 
 # 2) '무엇을' 장면: 서경파츠 반응형 화면
