@@ -69,10 +69,10 @@ with tempfile.TemporaryDirectory() as td:
         im = Image.open(f"{td}/f{n:03d}.png").convert("RGB").crop((0, 74, 960, 428))   # 960x354
         desc_placeholder(im)                                                           # 사이트 설명문('20년' 포함) 제거
         if n >= 165: pink_to_blue(im)                                                  # 사진 단계 버튼 색을 문구 단계와 맞춤
-        # 패널 하단 잘린 줄 → 흰색 페이드
-        g = Image.new("L", (200, 24)); dr = ImageDraw.Draw(g)
-        for y in range(24): dr.line([(0,y),(200,y)], fill=int(255*y/23))
-        im.paste(Image.new("RGB",(200,24),(255,255,255)), (760, 330), g)
+        # 패널 하단(「설명 문장」 칸, '20년' 포함) → 흰색 페이드로 가림
+        g = Image.new("L", (200, 38)); dr = ImageDraw.Draw(g)
+        for y in range(38): dr.line([(0,y),(200,y)], fill=min(255, int(255*y/10)))
+        im.paste(Image.new("RGB",(200,38),(255,255,255)), (760, 316), g)
         im.save(od/f"f{n:03d}.jpg", quality=92)
     # 깜빡임 보정: 둘째 줄·블러 패치·버튼 영역(0,184,330,354)을 안정된 프레임에서 복사
     REG = (0, 184, 330, 354)

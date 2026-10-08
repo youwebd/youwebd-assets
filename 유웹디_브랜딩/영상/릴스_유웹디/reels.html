@@ -40,7 +40,7 @@
   #edCode .ln{position:absolute;left:0;top:0;width:56px;text-align:right;font:22px/40px "DJMono",monospace;color:#4b5160}
   #edCode .cd{position:absolute;left:84px;top:0;font:26px/40px "DJMono","Pretendard",monospace;white-space:pre;color:#d7dae0}
   #edCode .tk{opacity:var(--dim,1)}
-  #edCode .hit{display:inline-block;line-height:30px;outline:3px solid rgba(255,64,64,0);outline-offset:4px;border-radius:6px}
+  #edCode .hit{display:inline-block;line-height:30px;margin:0 7px;outline:3px solid rgba(255,64,64,0);outline-offset:3px;border-radius:6px}
   #edFade{position:absolute;left:0;bottom:0;width:868px;height:96px;background:linear-gradient(rgba(31,34,41,0),#1f2229)}
   #edTopFade{position:absolute;left:0;top:0;width:868px;height:22px;background:linear-gradient(#1f2229 35%,rgba(31,34,41,0))}
   #edThumb{position:absolute;left:856px;top:68px;width:6px;height:360px;border-radius:3px;background:#3a3f4a}
@@ -71,6 +71,7 @@
   #browser .bar{height:44px;background:#fff;display:flex;align-items:center;gap:10px;padding-left:22px}
   #browser .bar i{width:13px;height:13px;border-radius:50%;background:#d5d7dd;display:block}
   #vid{position:absolute;left:0;top:44px;width:880px;height:325px;overflow:hidden}
+  #vidDim{position:absolute;left:720px;top:44px;width:160px;height:325px;background:#fff;opacity:0}   /* 확대 패널이 빠져나온 녹화 속 패널 자리 */
   #vid img{position:absolute;left:0;top:0;width:880px;height:325px;display:none}
   .hring{position:absolute;border:4px solid var(--red);border-radius:12px;box-shadow:0 0 0 3px rgba(200,40,40,.18),0 0 10px rgba(200,40,40,.28)}
   /* S4 / S8 cards */
@@ -144,14 +145,14 @@
   <div id="s2h"></div>
   <div id="s2grp" class="abs" style="left:0;top:0;width:1080px;height:1920px;transform-origin:500px 884px">
     <div class="pill" id="demoLbl" style="left:72px;top:600px;height:64px;padding:0 28px;font-size:44px;background:#c82828;color:#fff">수정 예시</div>
-    <div id="browser" class="shadow"><div class="bar"><i></i><i></i><i></i></div><div id="vid"></div></div>
+    <div id="browser" class="shadow"><div class="bar"><i></i><i></i><i></i></div><div id="vid"></div><div id="vidDim"></div></div>
     <div id="zp">
       <div id="zpCard">
         <div class="zpTab" style="left:0;font-weight:700;color:#16181d">콘텐츠</div><div class="zpTab" style="left:280px;font-weight:600;color:#9aa0ab">디자인</div>
         <i style="position:absolute;display:block;left:0;top:56px;width:280px;height:4px;background:#16181d"></i>
         <i style="position:absolute;display:block;left:0;top:60px;width:560px;height:2px;background:#eceef2"></i>
         <div class="zpScr" id="zpText">
-          <div id="zpG1"><div class="zpLbl" style="top:76px;font-size:28px;font-weight:600;color:#8a909c">상단 라벨</div>
+          <div id="zpG1"><div class="zpLbl" style="top:74px;font-size:30px;font-weight:600;color:#8a909c">상단 라벨</div>
             <div class="zpBox" style="top:112px;height:56px;border-color:#e6e8ee;border-radius:12px"><span style="padding-left:18px;font-size:30px;font-weight:600;color:#5b6270;letter-spacing:-.02em">건축과 인테리어를 한 팀이</span></div></div>
           <i id="zpHL"></i>
           <div class="zpLbl" style="top:184px;font-size:40px;line-height:48px;font-weight:700">제목 첫 줄</div>
@@ -329,17 +330,17 @@ function measureS0(){
 // k=0 화면 좌표 → 스크롤 k·줌 s 적용 화면 좌표
 const s0Z=(X,Y,k,s)=>[72+M.Cl[0]+s*(X-72-M.Cl[0]), 656-k+M.Cl[1]+s*(Y-656-M.Cl[1])];
 function s0(t){
-  tf($('s0h'),'scale('+lerp(1.02,1,E.out3(P(t,0,.3)))+')'); $('s0h').style.transformOrigin='72px 300px';
+  tf($('s0h'),'none');   // 첫 프레임부터 고정 (작은 펀치인은 움찔하는 느낌만 줌)
   s0l.forEach(sp=>tf(sp,'none'));
   // 코드 스크롤 → 줌
-  const k=640*E.io3(P(t,.08,.68)), s=lerp(1,1.6,E.io3(P(t,2.10,2.50)));
+  const k=640*E.io3(P(t,.08,.68)), s=lerp(1,1.6,E.io3(P(t,2.00,2.36)));
   edCode.style.transformOrigin=M.Cl[0]+'px '+M.Cl[1]+'px';
   tf(edCode,'translateY('+(-k)+'px) scale('+s+')');
-  edCode.style.setProperty('--dim',lerp(lerp(1,.55,P(t,.70,.86)),.35,E.io3(P(t,2.10,2.50))));
+  edCode.style.setProperty('--dim',lerp(lerp(1,.55,P(t,.70,.86)),.35,E.io3(P(t,2.00,2.36))));
   $('edThumb').style.top=(68+476*(k/640))+'px';
   // 같은 영업시간 세 곳에 빨간 박스
-  const fill=1-P(t,2.30,2.50);
-  [['A',.70],['C',.74],['B',.78]].forEach(([key,t0])=>{ const h=HE[key].el, a=E.out3(P(t,t0,t0+.10))*(key==='C'?1:1-P(t,2.10,2.30));   // 줌하면서 A·B는 빼고 C에 집중
+  const fill=1-P(t,2.20,2.36);
+  [['A',.70],['C',.74],['B',.78]].forEach(([key,t0])=>{ const h=HE[key].el, a=E.out3(P(t,t0,t0+.10))*(key==='C'?1:1-P(t,2.00,2.20));   // 줌하면서 A·B는 빼고 C에 집중
     h.style.outlineColor='rgba(255,64,64,'+a+')'; h.style.background='rgba(255,64,64,'+(.18*a*fill)+')';
     h.style.color='rgb('+Math.round(lerp(215,255,a))+','+Math.round(lerp(218,255,a))+','+Math.round(lerp(224,255,a))+')';
     tf(h,'scale('+lerp(.92,1,a)+')'); });
@@ -354,17 +355,17 @@ function s0(t){
   const shk=(t>=1.80&&t<1.98)?1+.12*Math.sin(Math.PI*P(t,1.80,1.98)):1;
   [['A',.98,'qA'],['B',1.24,'qB'],['C',1.50,'qC']].forEach(([key,t0,id])=>{ const q=$(id), [X,Y]=s0Z(M[key].end,M[key].cy,k,s);
     q.style.left=(X+18)+'px'; q.style.top=(Y-30)+'px';
-    op(q,clamp((t-t0)/.06)*(key==='C'?1:1-P(t,2.08,2.20))); tf(q,'scale('+(lerp(.5,1,E.back(P(t,t0,t0+.22)))*shk)+')'); });
+    op(q,clamp((t-t0)/.06)*(key==='C'?1:1-P(t,1.98,2.10))); tf(q,'scale('+(lerp(.5,1,E.back(P(t,t0,t0+.22)))*shk)+')'); });
   // 「어디를」 박스 펄스 (S1 '며칠'과 같은 식)
   let pulse=1; [.98,1.24,1.50].forEach(d=>{ if(t>=d&&t<d+.2) pulse=1+.06*Math.sin(P(t,d,d+.2)*Math.PI); });
   const hb=document.querySelector('#s0h .hlbox'); tf(hb,'scale('+pulse+')');
 }
 // S0 → S1: 줌으로 커진 빨간 박스를 와이프 동안 붙잡아 두었다가 S1 빨간 타원이 그려질 때 넘겨줌
 function bridge(t){
-  const b=$('bridge'); if(!M||t<2.50||t>=3.08){ b.style.display='none'; return; }
-  const C=M.C, [x0,y0]=s0Z(C.x0-7,C.y0-7,640,1.6), [x1,y1]=s0Z(C.x1+7,C.y1+7,640,1.6);
+  const b=$('bridge'); if(!M||t<2.38||t>=2.96){ b.style.display='none'; return; }
+  const C=M.C, [x0,y0]=s0Z(C.x0-6,C.y0-6,640,1.6), [x1,y1]=s0Z(C.x1+6,C.y1+6,640,1.6);
   b.style.display='block'; b.style.left=x0+'px'; b.style.top=y0+'px'; b.style.width=(x1-x0)+'px'; b.style.height=(y1-y0)+'px';
-  op(b,1-P(t,2.88,3.08));
+  op(b,1-P(t,2.86,2.96));
 }
 
 // ================= S1 =================
@@ -405,39 +406,40 @@ function frameAt(u){ // u = S2 로컬 시각. 녹화 프레임을 확대 패널 
   if(u<1.42) return seq(u,1.00,1.42,[30,31]);          // '쉽고, 간'
   if(u<2.02) return seq(u,1.42,2.02,rng(53,70));       // 53 = '쉽고, 간편하게 수정' 완성
   if(u<2.20) return 70;
-  if(u<2.60) return seq(u,2.20,2.60,rng(165,170));     // 배경 사진 목록
-  if(u<3.37) return seq(u,2.60,3.37,rng(225,248));     // 새 배경
+  if(u<2.64) return seq(u,2.20,2.64,rng(165,170));     // 배경 사진 목록 (클릭 2.60 뒤에 바뀜)
+  if(u<3.37) return seq(u,2.64,3.37,rng(225,248));     // 새 배경
   return 248;
 }
 let curF=null;
-const R2={inCard:[783,888,937,943],inZp:[100,1336,604,1432],title:[70,850,438,922],row3:[84,1360,620,1420],hero:[50,746,754,1066]};
+const R2={inCard:[783,888,937,943],inZp:[100,1336,604,1432],title:[62,856,436,919],row3:[84,1360,620,1420],hero:[62,748,750,1066]};
 function setRing(r,pulse){const s=pulse||1, cx=(r[0]+r[2])/2, cy=(r[1]+r[3])/2, w=(r[2]-r[0])*s, h=(r[3]-r[1])*s;
   const el=$('hring'); el.style.left=(cx-w/2)+'px'; el.style.top=(cy-h/2)+'px'; el.style.width=w+'px'; el.style.height=h+'px';}
 const lerpR=(a,b,x)=>a.map((v,i)=>lerp(v,b[i],x));
 function chipState(el,st,text){el.className='chip '+st; el.textContent=text;}
 function pop(el,u,t0,dur=.22){ op(el,clamp((u-t0)/.06)); tf(el,'scale('+lerp(.5,1,E.back(P(u,t0,t0+dur)))+')'); }
-const TYPE=[[.92,'쉽고,'],[1.00,'쉽고, 간'],[1.10,'쉽고, 간편'],[1.18,'쉽고, 간편하'],[1.26,'쉽고, 간편하게'],[1.34,'쉽고, 간편하게 수'],[1.42,'쉽고, 간편하게 수정']];
+// 녹화 속 사이트 제목은 '쉽고, 간'에서 한 번에 완성으로 바뀜(1.42) → 패널도 '쉽고, 간'에서 기다렸다가 직전에 빠르게 마저 침
+const TYPE=[[.92,'쉽고,'],[1.00,'쉽고, 간'],[1.26,'쉽고, 간편'],[1.30,'쉽고, 간편하'],[1.33,'쉽고, 간편하게'],[1.36,'쉽고, 간편하게 수'],[1.39,'쉽고, 간편하게 수정']];
 function s2(u){
   rise(s2l[0],u,-.24); rise(s2l[1],u,-.18);
   const g=E.out3(P(u,-.26,-.04));
   tf($('s2grp'),'translateY('+((1-g)*60)+'px)'); op($('s2grp'),g);
   const f=frameAt(u); if(curF!==f){ if(curF) FR[curF].style.display='none'; FR[f].style.display='block'; curF=f; }
-  const punch=(u>=2.60&&u<2.66)?(1+.03*Math.sin(P(u,2.60,2.66)*Math.PI)):1; tf(vid,'scale('+punch+')');
+  const punch=(u>=2.64&&u<2.70)?(1+.03*Math.sin(P(u,2.64,2.70)*Math.PI)):1; tf(vid,'scale('+punch+')');
   // 확대 패널: 녹화 속 「제목 첫 줄」 자리에서 커지며 왼쪽 아래 칸으로 (FLIP)
-  const zp=$('zp'), e=E.out3(P(u,.15,.50)), tx0=783-72-.306*28, ty0=-268;
+  const zp=$('zp'), e=E.io3(P(u,.16,.56)), tx0=783-72-.306*28, ty0=-268;   // 제자리에서 먼저 선명해진 뒤 천천히 출발
   tf(zp,'translate('+lerp(tx0,0,e)+'px,'+lerp(ty0,0,e)+'px) scale('+lerp(.306,1,e)+')');
   $('zpCard').style.clipPath='inset('+lerp(176,0,e)+'px '+lerp(16,0,e)+'px '+lerp(12,0,e)+'px '+lerp(16,0,e)+'px round '+lerp(10,24,e)+'px)';
   zp.style.filter='drop-shadow(0 '+lerp(2,16,e)+'px '+lerp(4,40,e)+'px rgba(22,24,29,'+lerp(.06,.18,e)+'))';
-  op(zp,P(u,.15,.23));
+  op(zp,P(u,.10,.16)); op($('vidDim'),.7*E.out3(P(u,.30,.56)));
   // 패널 안: 문구 화면 → 사진 목록 화면
   const xo=E.in3(P(u,2.20,2.29)), li=E.out3(P(u,2.29,2.40));   // 겹치지 않게 차례로
   tf($('zpText'),'translateY('+(-32*xo)+'px)'); op($('zpText'),1-xo);
   tf($('zpList'),'translateY('+(32*(1-li))+'px)'); op($('zpList'),li);
   tf($('zpHL'),'scaleX('+E.out3(P(u,.46,.62))+')');
-  op($('zpG1'),1-.5*P(u,.70,.82));
+  op($('zpG1'),1-.4*P(u,.70,.82));
   let ty='쉽고'; TYPE.forEach(([tt,x])=>{ if(u>=tt) ty=x; }); $('zpTyped').textContent=ty;
   op($('zpCaret'),(u>=.70&&(u<1.60||Math.floor((u-1.60)/.4)%2===0))?1:0);
-  pop($('zpChk1'),u,.72); pop($('zpChk2'),u,2.62);
+  pop($('zpChk1'),u,1.42); pop($('zpChk2'),u,2.66);   // ✓ = 반영 완료
   const sel=P(u,2.60,2.66); $('zpRow3').style.background='rgba(251,233,233,'+sel+')'; op($('zpDots3'),1-sel);
   // 하이라이트 링: 카드 속 입력칸 → 확대 입력칸 → 사이트 제목 / 3행 → 사이트 배경
   let r=R2.inCard, ro=0, pulse=1;
@@ -446,7 +448,7 @@ function s2(u){
   else if(u<1.48){ r=R2.inZp; ro=1-P(u,1.42,1.48); }          // 다른 칸 위를 지나가지 않도록: 입력칸에서 사라졌다가
   else if(u<2.60){ r=R2.title; ro=E.out3(P(u,1.48,1.58))*(1-P(u,2.20,2.30));   // 사이트 제목에 다시 나타남
     pulse=u<1.60?lerp(1.06,1,E.out3(P(u,1.48,1.60))):1+.025*Math.sin((u-1.60)/.8*Math.PI*2); }
-  else { r=R2.hero; ro=E.out3(P(u,2.64,2.74)); pulse=lerp(1.04,1,E.out3(P(u,2.64,2.80))); }   // 3행 클릭 → 사이트 배경
+  else { r=R2.hero; ro=E.out3(P(u,2.66,2.76)); pulse=lerp(1.04,1,E.out3(P(u,2.66,2.82))); }   // 3행 클릭 → 사이트 배경
   setRing(r,pulse); op($('hring'),ro);
   // 포인터 (S0과 같은 모양): 곧장 입력칸으로 가서 한 번 클릭 / 3행 썸네일 클릭
   const pt=$('s2ptr'); let x,y,o,sc;
@@ -466,7 +468,8 @@ function s2(u){
   tf(c1,'scale('+(lerp(.8,1,ap1)*b1)+')'); op(c1,clamp(ap1*1.3)); c1.style.transformOrigin='left center';
   tf(c2,'scale('+(lerp(.8,1,ap2)*b1)+')'); op(c2,clamp(ap2*1.3)); c2.style.transformOrigin='left center';
   // '바로 반영': 문구 완성 직후, 사진 교체 직후 (사이트 제목 옆)
-  const ia=Math.max(E.back(P(u,1.48,1.70))*(1-P(u,2.12,2.20)), E.back(P(u,2.66,2.88)));
+  const ia=Math.max(E.back(P(u,1.48,1.70))*(1-P(u,2.12,2.20)), E.back(P(u,2.70,2.92)));
+  const ins=$('instant'); ins.style.left=(u<2.40?452:512)+'px'; ins.style.top=(u<2.40?852:978)+'px';   // 사진 단계는 사진 쪽 모서리
   op($('instant'),clamp(ia*1.4)); tf($('instant'),'scale('+lerp(.8,1,clamp(ia,0,1.2))+')'); $('instant').style.transformOrigin='left center';
 }
 
@@ -650,7 +653,7 @@ function s10(lt){
 // [id, 시작, 함수, 프리롤]  프리롤: 위로 밀며 들어오는 장면은 전환 중에 내용이 함께 올라오도록 내부 시계를 0.25초 앞당김
 const SC=[['s0',0,s0,0],['s1',2.80,s1,0],['s2',6.40,s2,0],['s3',10.10,s3,.25],['s4',12.55,s4,.25],['s5',16.10,s5,.25],
   ['s6',18.65,s6,.25],['s7',21.70,s7,0],['s8',24.10,s8,0],['s9',S9A,s9,0],['s10',S9B,s10,0]];
-const TR=[{k:'circle',t0:2.50,t1:2.80,cx:586,cy:996},{k:'circle',t0:6.10,t1:6.40,cx:540,cy:1358},{k:'up',t0:9.85,t1:10.10},
+const TR=[{k:'circle',t0:2.38,t1:2.80,cx:586,cy:996,r0:190},{k:'circle',t0:6.10,t1:6.40,cx:540,cy:1358},{k:'up',t0:9.85,t1:10.10},
   {k:'up',t0:12.30,t1:12.55},{k:'up',t0:15.85,t1:16.10},{k:'up',t0:18.40,t1:18.65},{k:'circle',t0:21.40,t1:21.70,cx:502,cy:770},
   {k:'circle',t0:23.80,t1:24.10,cx:540,cy:500},{k:'left',t0:28.35,t1:28.60},{k:'circle',t0:36.40,t1:36.70,cx:dotX(4),cy:1384}];
 const DUR=40.0;
@@ -663,7 +666,7 @@ function seek(t){
     if(tin&&t<tin.t1){ const p=E.io3(P(t,tin.t0,tin.t1));
       if(tin.k==='up') T='translateY('+(H*(1-p))+'px)';
       else if(tin.k==='left') T='translateX('+(W*(1-p))+'px)';
-      else { const R=Math.hypot(Math.max(tin.cx,W-tin.cx),Math.max(tin.cy,H-tin.cy)); clip='circle('+(R*p)+'px at '+tin.cx+'px '+tin.cy+'px)'; } }
+      else { const R=Math.hypot(Math.max(tin.cx,W-tin.cx),Math.max(tin.cy,H-tin.cy)); const r0=tin.r0||0; clip='circle('+(r0+(R-r0)*p)+'px at '+tin.cx+'px '+tin.cy+'px)'; } }
     if(tout&&t>=tout.t0){ const p=E.io3(P(t,tout.t0,tout.t1));
       if(tout.k==='up') T='translateY('+(-H*p)+'px)';
       else if(tout.k==='left') T='translateX('+(-W*p)+'px)'; }
