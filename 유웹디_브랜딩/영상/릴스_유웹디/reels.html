@@ -411,7 +411,7 @@ function frameAt(u){ // u = S2 로컬 시각. 녹화 프레임을 확대 패널 
   return 248;
 }
 let curF=null;
-const R2={inCard:[783,888,937,943],inZp:[100,1336,604,1432],title:[62,856,436,919],row3:[84,1360,620,1420],hero:[62,748,750,1066]};
+const R2={inCard:[783,888,937,943],inZp:[100,1336,604,1432],title:[62,856,430,914],row3:[84,1360,620,1420],hero:[62,748,750,1066]};
 function setRing(r,pulse){const s=pulse||1, cx=(r[0]+r[2])/2, cy=(r[1]+r[3])/2, w=(r[2]-r[0])*s, h=(r[3]-r[1])*s;
   const el=$('hring'); el.style.left=(cx-w/2)+'px'; el.style.top=(cy-h/2)+'px'; el.style.width=w+'px'; el.style.height=h+'px';}
 const lerpR=(a,b,x)=>a.map((v,i)=>lerp(v,b[i],x));
@@ -424,7 +424,7 @@ function s2(u){
   const g=E.out3(P(u,-.26,-.04));
   tf($('s2grp'),'translateY('+((1-g)*60)+'px)'); op($('s2grp'),g);
   const f=frameAt(u); if(curF!==f){ if(curF) FR[curF].style.display='none'; FR[f].style.display='block'; curF=f; }
-  const punch=(u>=2.64&&u<2.70)?(1+.03*Math.sin(P(u,2.64,2.70)*Math.PI)):1; tf(vid,'scale('+punch+')');
+  tf(vid,'none');   // 배경 교체는 크기 변화 없이 (1프레임 튐 방지)
   // 확대 패널: 녹화 속 「제목 첫 줄」 자리에서 커지며 왼쪽 아래 칸으로 (FLIP)
   const zp=$('zp'), e=E.io3(P(u,.16,.56)), tx0=783-72-.306*28, ty0=-268;   // 제자리에서 먼저 선명해진 뒤 천천히 출발
   tf(zp,'translate('+lerp(tx0,0,e)+'px,'+lerp(ty0,0,e)+'px) scale('+lerp(.306,1,e)+')');
@@ -447,8 +447,8 @@ function s2(u){
   else if(u<1.42){ r=R2.inZp; ro=P(u,.70,.76); }
   else if(u<1.48){ r=R2.inZp; ro=1-P(u,1.42,1.48); }          // 다른 칸 위를 지나가지 않도록: 입력칸에서 사라졌다가
   else if(u<2.60){ r=R2.title; ro=E.out3(P(u,1.48,1.58))*(1-P(u,2.20,2.30));   // 사이트 제목에 다시 나타남
-    pulse=u<1.60?lerp(1.06,1,E.out3(P(u,1.48,1.60))):1+.025*Math.sin((u-1.60)/.8*Math.PI*2); }
-  else { r=R2.hero; ro=E.out3(P(u,2.66,2.76)); pulse=lerp(1.04,1,E.out3(P(u,2.66,2.82))); }   // 3행 클릭 → 사이트 배경
+    pulse=u<1.60?lerp(1.03,1,E.out3(P(u,1.48,1.60))):1+.012*Math.sin((u-1.60)/.8*Math.PI*2); }   // 카드 밖으로 나가지 않을 만큼만
+  else { r=R2.hero; ro=E.out3(P(u,2.66,2.76)); }   // 카드 안쪽 크기 그대로 나타남   // 3행 클릭 → 사이트 배경
   setRing(r,pulse); op($('hring'),ro);
   // 포인터 (S0과 같은 모양): 곧장 입력칸으로 가서 한 번 클릭 / 3행 썸네일 클릭
   const pt=$('s2ptr'); let x,y,o,sc;
