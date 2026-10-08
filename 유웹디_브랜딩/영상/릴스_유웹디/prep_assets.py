@@ -57,7 +57,7 @@ for f in sd.glob("*.jpg"): f.unlink()
 subprocess.run(["ffmpeg","-v","error","-i",str(R/"hero/shingonggan.mp4"),"-vsync","0","-q:v","3",str(sd/"f%03d.jpg")], check=True)
 
 # 이전 버전 자산 정리
-for old in ["case_aline.jpg","case_luxenova.jpg","case_seokyung.jpg","what_gojegagusoa.jpg","rep_jang.jpg"]:
+for old in ["case_aline.jpg","case_luxenova.jpg","case_seokyung.jpg","what_gojegagusoa.jpg","rep_jang.jpg","lens_old.jpg","lens_new.jpg"]:
     (A/old).unlink(missing_ok=True)
 
 # 4) 수정 시연 프레임: 필요한 프레임만, 크롭(y74~428) + 설명문 블러 + 패널 하단 흰 페이드
@@ -79,9 +79,9 @@ with tempfile.TemporaryDirectory() as td:
     for tgt, src in [(18,21),(19,21),(20,21),(30,21),(31,21),(53,54)]:
         t = Image.open(od/f"f{tgt:03d}.jpg"); s_ = Image.open(od/f"f{src:03d}.jpg")
         t.paste(s_.crop(REG), REG[:2]); t.save(od/f"f{tgt:03d}.jpg", quality=92)
-    # 렌즈용 썸네일: 바뀌기 전/후 사이트 히어로 (사이트 영역 0~755)
-    for name, n in [("old", 168), ("new", 248)]:
-        th = Image.open(f"{td}/f{n:03d}.png").convert("RGB").crop((0, 74, 755, 428))
-        desc_placeholder(th); pink_to_blue(th)
-        th.resize((336, 158), Image.LANCZOS).save(A/f"lens_{name}.jpg", quality=92)
+    # 확대 빌더 패널의 배경 사진 목록 썸네일 (원본 960x540 좌표, 사이트 제목·설명문·숫자가 없는 영역)
+    for name, n, box in [("zp_th1", 168, (430, 90, 750, 290)), ("zp_th2", 168, (600, 140, 740, 227)),
+                         ("zp_th3", 248, (430, 90, 750, 290)), ("zp_th4", 168, (420, 330, 560, 417))]:
+        th = Image.open(f"{td}/f{n:03d}.png").convert("RGB").crop(box).resize((168, 104), Image.LANCZOS)
+        th.filter(ImageFilter.UnsharpMask(1.2, 60, 2)).save(A/f"{name}.jpg", quality=92)
 print("ok", len(USE), "frames")
