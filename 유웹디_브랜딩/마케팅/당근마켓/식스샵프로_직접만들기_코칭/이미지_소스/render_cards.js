@@ -1,7 +1,7 @@
 /* cards.json → 당근마켓 이미지 카드(1080x1080 JPG)
  * 사용법: NODE_PATH=/opt/node22/lib/node_modules node render_cards.js
  * 필요: playwright(크롬). 글꼴은 견적서_생성기/fonts 의 Pretendard 부분 글꼴을 씁니다.
- * 카드 문구는 cards.json 에서만 고칩니다. 점 항목이 「라벨: 값」 모양이면 안내 줄, 아니면 번호 줄로 그립니다. */
+ * 카드 문구는 cards.json 에서만 고칩니다. 점 항목이 「라벨: 값」 모양이면 안내 줄, 아니면 체크 줄(순서 없음)로 그립니다. */
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
 const HERE = __dirname;
@@ -23,7 +23,7 @@ function pointsHTML(c) {
   return c.points.map((p, i) => {
     const m = p.match(/^(.{1,6}?)\s*[:：]\s*(.+)$/);
     if (m) return `<div class="row fact"><b class="lab">${esc(m[1])}</b><span class="val">${esc(m[2])}</span></div>`;
-    return `<div class="row"><i class="no">${i + 1}</i><span class="val">${esc(p)}</span></div>`;
+    return `<div class="row"><i class="ck"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i><span class="val">${esc(p)}</span></div>`;
   }).join('');
 }
 function html(c) {
@@ -44,16 +44,18 @@ h1 .dim{color:#5b6270}
 h1 em{font-style:normal;color:#c82828;text-decoration:underline;text-decoration-thickness:7px;text-underline-offset:9px}
 .pts{margin-top:46px;display:flex;flex-direction:column;gap:20px}
 .row{background:#f6f5f7;border-radius:30px;padding:24px 32px 24px 26px;display:flex;align-items:center;gap:26px;position:relative}
-.row .no{flex:none;width:64px;height:64px;border-radius:50%;background:#c82828;color:#fff;font-style:normal;font-weight:700;font-size:34px;display:flex;align-items:center;justify-content:center}
+.row .ck{flex:none;width:64px;height:64px;border-radius:50%;background:#c82828;display:flex;align-items:center;justify-content:center}
 .row .val{font-size:38px;font-weight:700;line-height:1.3;letter-spacing:-.025em}
 .row.fact{gap:24px;padding-left:34px}
-.row.fact .lab{flex:none;width:128px;color:#c82828;font-size:32px;font-weight:700;letter-spacing:-.02em}
+.row.fact .lab{flex:none;width:172px;color:#c82828;font-size:32px;font-weight:700;letter-spacing:-.02em}
+.pts.mid .row{padding-top:30px;padding-bottom:30px}.pts.mid .val{font-size:42px}.pts.big .row{padding-top:38px;padding-bottom:38px}.pts.big .val{font-size:44px}.pts.big .lab,.pts.mid .lab{font-size:34px}
+.foot.sm{font-size:30px}
 .foot{position:absolute;left:0;right:0;bottom:0;background:#16181d;color:#fff;border-radius:30px;padding:26px 34px;font-size:34px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:18px}
 .foot:before{content:"";flex:none;width:16px;height:16px;border-radius:50%;background:#ff5a5a}
 </style></head><body><div class="wrap">
 <div class="top"><img src="${LOGO}"><span class="nm">유웹디</span>${c.kicker ? `<span class="kick">${esc(c.kicker)}</span>` : ''}</div>
-<div class="main"><h1>${headlineHTML(c)}</h1><div class="pts">${pointsHTML(c)}</div></div>
-${c.footer ? `<div class="foot">${esc(c.footer)}</div>` : ''}
+<div class="main"><h1>${headlineHTML(c)}</h1><div class="pts${c.points.length <= 2 ? ' big' : c.points.length === 3 ? ' mid' : ''}">${pointsHTML(c)}</div></div>
+${c.footer ? `<div class="foot${c.footer.length > 22 ? ' sm' : ''}">${esc(c.footer)}</div>` : ''}
 </div></body></html>`;
 }
 
