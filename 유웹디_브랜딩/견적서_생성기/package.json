@@ -1,0 +1,9 @@
+{
+  "name": "youwebd-quote-generator",
+  "private": true,
+  "description": "유웹디 견적서 생성기 (HTML → PDF · PPTX)",
+  "dependencies": {
+    "pptxgenjs": "^3.12.0",
+    "playwright": "^1.48.0"
+  }
+}
