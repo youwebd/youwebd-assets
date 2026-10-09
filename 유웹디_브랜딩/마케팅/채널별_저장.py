@@ -203,20 +203,30 @@ def check_blog():
 
 
 def check_daangn():
-    md = DG / "당근마켓_소식_광고문구.md"
-    if not md.exists():
+    """당근마켓/ 아래 모든 캠페인 폴더의 「당근마켓_소식_광고문구.md」를 검사한다."""
+    folders = sorted(d for d in (ROOT / "당근마켓").iterdir() if d.is_dir())
+    if not folders:
         bad("당근마켓 글 없음"); return
-    t = md.read_text(encoding="utf-8")
-    blocks = re.findall(r"```\n(.*?)\n```", t, flags=re.S)
-    for i, b in enumerate(blocks, 1):
-        if len(b) > 500: bad(f"당근 소식 {i}번 {len(b)}자 (500자 초과)")
-    titles = re.findall(r"^제목: (.*)$", t, flags=re.M); bodies = re.findall(r"^본문: (.*)$", t, flags=re.M)
-    for i, (a, b) in enumerate(zip(titles, bodies), 1):
-        if len(a) > 20: bad(f"당근 광고 후보 {i} 제목 {len(a)}자 (20자 초과)")
-        if len(b) > 60: bad(f"당근 광고 후보 {i} 본문 {len(b)}자 (60자 초과)")
-    for i in sorted(set(re.findall(r"IMG-\d+", " ".join(re.findall(r"^사진\(순서대로\): (.*)$", t, flags=re.M))))):
-        if not list((DG / "이미지").glob(i + "_*.jpg")): bad(f"당근 소식 이미지 {i} 파일 없음")
-    notes.append(f"당근마켓 소식 {len(blocks)}편({', '.join(str(len(b)) + '자' for b in blocks)}), 광고 문구 {len(titles)}개")
+    for d in folders:
+        md = d / "당근마켓_소식_광고문구.md"
+        if not md.exists():
+            bad(f"{d.name}: 당근마켓_소식_광고문구.md 없음"); continue
+        t = md.read_text(encoding="utf-8")
+        blocks = re.findall(r"```\n(.*?)\n```", t, flags=re.S)
+        for i, b in enumerate(blocks, 1):
+            if len(b) > 500: bad(f"{d.name}: 당근 소식 {i}번 {len(b)}자 (500자 초과)")
+        titles = re.findall(r"^제목: (.*)$", t, flags=re.M); bodies = re.findall(r"^본문: (.*)$", t, flags=re.M)
+        for i, (a, b) in enumerate(zip(titles, bodies), 1):
+            if len(a) > 20: bad(f"{d.name}: 당근 광고 후보 {i} 제목 {len(a)}자 (20자 초과)")
+            if len(b) > 60: bad(f"{d.name}: 당근 광고 후보 {i} 본문 {len(b)}자 (60자 초과)")
+        for i in sorted(set(re.findall(r"(?:IMG|CARD)-\d+", " ".join(re.findall(r"^사진\(순서대로\): (.*)$", t, flags=re.M))))):
+            if not list((d / "이미지").glob(i + "_*.jpg")): bad(f"{d.name}: 당근 소식 이미지 {i} 파일 없음")
+        if "코칭" in d.name:   # 코칭 캠페인: 무료·지역 표기가 오해를 만들지 않게 같은 글 안에서 확인
+            units = [("소식 %d" % i, b) for i, b in enumerate(blocks, 1)] + [("광고 %d" % i, a + " " + b) for i, (a, b) in enumerate(zip(titles, bodies), 1)]
+            for name, u in units:
+                if "무료" in u and "3만원" not in u: bad(f"{d.name}: {name} 「무료」만 있고 「3만원」이 없음(전체 무료로 읽힘)")
+                if "경기 광주" in u and not ("신현동" in u and "능평동" in u): bad(f"{d.name}: {name} 「경기 광주」만 있고 신현동·능평동 한정 표기가 없음")
+        notes.append(f"당근마켓 [{d.name}] 소식 {len(blocks)}편({', '.join(str(len(b)) + '자' for b in blocks)}), 광고 문구 {len(titles)}개")
 
 
 def check():
