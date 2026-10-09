@@ -186,10 +186,20 @@ def check_blog():
     if len(tags) > 30: bad("블로그 태그 30개 초과")
     if any(" " in x for x in tags): bad("블로그 태그에 공백")
     plain = re.sub(r"!\[[^\]]*\]\(IMG-\d+\)", "", body).strip()
+    # 본문 맨 끝 「태그 #…」 줄: 글자 수에서는 빼고, 표의 태그 목록과 같은지 확인한다
+    tag_line = re.search(r"^태그 (#\S+(?: #\S+)*)$", plain, flags=re.M)
+    if not tag_line:
+        bad("블로그 본문 맨 끝에 「태그 #…」 줄 없음")
+    else:
+        if set(tag_line.group(1).split()) != set(tags): bad("블로그 본문 끝 해시태그 줄과 표의 태그 목록이 다름")
+        plain = plain.replace(tag_line.group(0), "").strip()
+    if not 2400 <= len(plain) <= 3400: bad(f"블로그 본문 {len(plain)}자 (2,400~3,400자 아님)")
     for i in sorted(set(re.findall(r"\]\((IMG-\d+)\)", body))):
         if not list(IMG_DIR.glob(i + "_*.jpg")): bad(f"블로그 본문 이미지 {i} 파일 없음")
     n_img = len(set(re.findall(r"IMG-\d+", body)))
-    notes.append(f"블로그 제목 {len(title)}자, 본문 {len(plain)}자, 태그 {len(tags)}개, 이미지 {n_img}장 사용")
+    n_h2 = len(re.findall(r"^## ", plain, flags=re.M))
+    if not 5 <= n_h2 <= 8: bad(f"블로그 소제목 {n_h2}개 (5~8개 아님)")
+    notes.append(f"블로그 제목 {len(title)}자, 본문 {len(plain)}자(해시태그 줄 제외), 소제목 {n_h2}개, 태그 {len(tags)}개, 이미지 {n_img}장 사용")
 
 
 def check_daangn():
