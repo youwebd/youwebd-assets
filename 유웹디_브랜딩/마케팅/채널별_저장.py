@@ -5,6 +5,7 @@
   python3 채널별_저장.py            # 블로그 이미지를 영상에서 다시 뽑고(영상이 바뀌었을 때 자동 반영), 모든 채널 글을 검사
   python3 채널별_저장.py --render   # 영상·커버부터 다시 만든 뒤 위 작업 (node, playwright, ffmpeg 필요)
   python3 채널별_저장.py --check    # 검사만
+  python3 채널별_저장.py --zip [채널...]   # 내 PC 저장용 zip 만들기 (예: --zip 당근마켓). 채널을 안 쓰면 전체. 결과는 _내보내기/ 에 생김
 
 하는 일
   1) --render: 영상/릴스_유웹디 의 render.js → 인스타그램 폴더에 mp4, cover.js → 같은 폴더에 커버 PNG
@@ -243,7 +244,35 @@ def check():
     return 0
 
 
+CHANNELS = ["인스타그램", "스레드", "네이버블로그", "당근마켓"]
+
+
+def export_zip(names):
+    """채널 폴더를 내 PC 저장용 zip 으로 만든다. 압축 안의 맨 위 폴더가 채널 이름이라,
+    PC 의 C:\\Users\\PC\\유웹디_브랜딩\\마케팅콘텐츠\\ 에 풀면 마케팅콘텐츠\\<채널>\\… 로 들어간다."""
+    import zipfile
+    names = names or CHANNELS
+    out_dir = ROOT / "_내보내기"
+    out_dir.mkdir(exist_ok=True)
+    zname = (names[0] if len(names) == 1 else "마케팅콘텐츠") + ".zip"
+    out = out_dir / zname
+    n = 0
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+        for ch in names:
+            base = ROOT / ch
+            if not base.is_dir():
+                raise SystemExit(f"채널 폴더 없음: {ch} (가능한 채널: {', '.join(CHANNELS)})")
+            for f in sorted(base.rglob("*")):
+                if f.is_file() and not f.name.startswith(".tmp_") and "__pycache__" not in f.parts:
+                    z.write(f, f.relative_to(ROOT).as_posix()); n += 1
+    print(f"[내보내기] {out.relative_to(ROOT.parent.parent)}  (파일 {n}개, {out.stat().st_size // 1024}KB)")
+    print("  PC 의 C:\\Users\\PC\\유웹디_브랜딩\\마케팅콘텐츠\\ 폴더에 풀면 채널 폴더가 그 안에 합쳐집니다.")
+
+
 if __name__ == "__main__":
+    if "--zip" in sys.argv:
+        export_zip([x for x in sys.argv[sys.argv.index("--zip") + 1:] if not x.startswith("--")])
+        sys.exit(0)
     args = set(sys.argv[1:])
     if "--check" not in args:
         if "--render" in args: render()
